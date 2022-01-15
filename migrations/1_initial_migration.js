@@ -1,5 +1,8 @@
 const Migrations = artifacts.require("Migrations");
+const DaiTokenMock = artifacts.require("DaiTokenMock")
 
-module.exports = function(deployer) {
-  deployer.deploy(Migrations);
+module.exports = async function(deployer) {
+  await deployer.deploy(Migrations);
+  await deployer.deploy(DaiTokenMock, 1000);
+  
 };
