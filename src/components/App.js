@@ -31,6 +31,7 @@ class App extends Component {
     const balance = await daiTokenMock.methods.balanceOf(this.state.account).call();
     this.setState({balance:web3.utils.fromWei((balance.toString()), "Ether")});
     const transactions = await daiTokenMock.getPastEvents('Transfer', {fromBlock:0, toBlock:'latest', filter: {from : this.state.account}});
+    this.setState({transactions: transactions});
     console.log(transactions);
   }
 
@@ -53,25 +54,19 @@ class App extends Component {
       <div>
         <nav className="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
           <a
-            className="navbar-brand col-sm-3 col-md-2 mr-0"
-            href="http://www.dappuniversity.com/bootcamp"
+            className="navbar-brand col-sm-3 col-md-2 mr-0 text-center "
+            href="https://github.com/Aysha-Hussaini/Eth_Wallet.git"
             target="_blank"
             rel="noopener noreferrer"
           >
-            Dapp University
+            DAI- ERC20 Token- Wallet 
           </a>
         </nav>
         <div className="container-fluid mt-5">
           <div className="row">
             <main role="main" className="col-lg-12 d-flex text-center">
               <div className="content mr-auto ml-auto">
-                <a
-                  href="http://www.dappuniversity.com/bootcamp"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <img src={logo} className="App-logo" alt="logo" width="300"/>
-                </a>
+                <img src={logo} className="App-logo" alt="logo" width="300"/>
                 <h1>{this.state.balance} DAI </h1>
                 <form onSubmit={(event)=> {
                       event.preventDefault()
@@ -100,14 +95,26 @@ class App extends Component {
                    <button type = "submit" className='btn btn-primary btn-block'>SEND</button>
                  </form>
                 
-                <a
-                  className="App-link"
-                  href="http://www.dappuniversity.com/bootcamp"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  LEARN BLOCKCHAIN <u><b>NOW! </b></u>
-                </a>
+                  <table className = "table">
+                    <thead>
+                      <tr>
+                        <th scope ="col">Recipient</th>
+                        <th scope ="col">Value</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {this.state.transactions.map((tx, index) => {
+                        return(
+                          <tr>
+                            <td>{tx.returnValues.to}</td>
+                            <td>{window.web3.utils.fromWei(tx.returnValues.value.toString(), "Ether")}</td>
+                          </tr>
+                        )
+                      }
+                      )}
+                    </tbody>
+                  </table>
+                
               </div>
             </main>
           </div>
