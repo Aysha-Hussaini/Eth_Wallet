@@ -25,15 +25,17 @@ class App extends Component {
     const web3 = window.web3;
     const accounts = await web3.eth.getAccounts();
     this.setState({account: accounts[0]})
-    console.log(accounts);
-    const daiTokenAddress = '0x9D02Ea570C5Ce097B7b8131dd0Ab6120ec03F782';
+    const daiTokenAddress = '0x98dca85d0a56eb811fF2344224F2FAafB45e21Ad';
     const daiTokenMock = new web3.eth.Contract(DaiTokenMock.abi, daiTokenAddress);
     this.setState({daiTokenMock : daiTokenMock});
-    
     const balance = await daiTokenMock.methods.balanceOf(this.state.account).call();
-    this.setState({balance:balance.toString()});
+    this.setState({balance:web3.utils.fromWei((balance.toString()), "Ether")});
     const transactions = await daiTokenMock.getPastEvents('Transfer', {fromBlock:0, toBlock:'latest', filter: {from : this.state.account}});
     console.log(transactions);
+  }
+
+  transfer(recipient, amount){
+    this.state.daiTokenMock.methods.transfer(recipient, amount).send({from : this.state.account});
   }
 
   constructor(props){
@@ -44,6 +46,7 @@ class App extends Component {
       balance : 0,
       transactions : []
     }
+    this.transfer = this.transfer.bind(this);
   }
   render() {
     return (
@@ -70,9 +73,32 @@ class App extends Component {
                   <img src={logo} className="App-logo" alt="logo" width="300"/>
                 </a>
                 <h1>{this.state.balance} DAI </h1>
-                <form>{
-                  //somecode
-                }</form>
+                <form onSubmit={(event)=> {
+                      event.preventDefault()
+                      const recipient = this.recipient.value
+                      const amount = window.web3.utils.toWei(this.amount.value, "Ether");
+                      this.transfer(recipient, amount)
+                }} >
+                   <div className = "form-group mr-sm-2">
+                     <input
+                     id = "recipient"
+                     type = "text"
+                     ref = {(input) => {this.recipient = input}}
+                     className = "form-control"
+                     placeholder = "Recipient Address"
+                     required/>
+                   </div>
+                   <div className = "form-group mr-sm-2">
+                     <input
+                     id = "amount"
+                     type = "text"
+                     ref = {(input) => {this.amount = input}}
+                     className = "form-control"
+                     placeholder = "Amount"
+                     required/>
+                   </div>
+                   <button type = "submit" className='btn btn-primary btn-block'>SEND</button>
+                 </form>
                 
                 <a
                   className="App-link"

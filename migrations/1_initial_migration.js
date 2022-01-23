@@ -1,8 +1,9 @@
 const Migrations = artifacts.require("Migrations");
-const DaiTokenMock = artifacts.require("DaiTokenMock")
+const DaiTokenMock = artifacts.require("DaiTokenMock");
 
 module.exports = async function(deployer) {
   await deployer.deploy(Migrations);
-  await deployer.deploy(DaiTokenMock, 1000);
+  const initialSupply = web3.utils.toWei('1000', "Ether")
+  await deployer.deploy(DaiTokenMock, initialSupply);
   
 };
